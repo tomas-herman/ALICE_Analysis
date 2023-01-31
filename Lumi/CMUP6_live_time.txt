@@ -1,0 +1,4 @@
+LHC18q CMUP6 live-time uncertainty: 215.987/215.996 = 0.999961
+LHC18r CMUP6 live-time uncertainty: 316.29/316.284 = 1.00002
+
+Weighted average: 0,999996058

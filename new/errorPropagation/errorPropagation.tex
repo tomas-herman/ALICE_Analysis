@@ -1,0 +1,138 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{boxhandler}
+\usepackage[utf8]{inputenc}
+%\usepackage[czech,english]{babel}
+\usepackage{mathptmx} %ALICE style J/psi
+\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+\usepackage{amsmath} % matematické výrazy
+\usepackage{amssymb} % matematické výrazy
+%\usepackage[Symbol]{upgreek} % recke verze matematickych reckych symbolu
+\usepackage{array}
+\usepackage[dvipsnames]{xcolor}   % dovolí pužívat barvicky
+\usepackage{wrapfig}   % text obiha kolem obrazku
+\usepackage{caption}   % caption zarovnavani
+\usepackage{fancyhdr}  % záhlaví zápatí
+\usepackage{gensymb}   % stupne Celsia
+\usepackage{subcaption} %for sub figures
+\usepackage{incgraph,tikz} %obrazek pres celou stranu
+\usepackage{mathrsfs}  %znak pro integrovanou luminozitu
+\usepackage{hyperref} %odkazy jak hypertextové tak na tabulky
+\usepackage{appendix}
+
+\setlength{\intextsep}{1cm}
+
+\newcommand*\dif{\mathop{}\!\mathrm{d}} %new command for writing differentials
+\newcommand*\Dif[1]{\mathop{}\!\mathrm{d^#1}} %new command for writing differentials of ghigher orders
+\newcommand*\jpsi{\mathrm{J}/\psi} % Command for Jpsi typing
+\newcommand*\syst{(\mathrm{syst})} %Command for sys
+\newcommand*\stat{(\mathrm{stat})} %Commad for stat
+
+
+% completely avoid orphans (first lines of a new paragraph on the bottom of a page)
+\clubpenalty=10000
+
+% completely avoid widows (last lines of paragraph on a new page)
+\widowpenalty=10000
+
+
+%  Formát papíru a odsazení od jeho okrajů
+\usepackage[a4paper]{geometry}
+%\geometry{verbose,tmargin=2.5cm,bmargin=2cm,lmargin=3.5cm,rmargin=2cm,headheight=0.8cm,headsep=1cm,footskip=0.5cm}
+\geometry{bmargin=4cm, lmargin=3.5cm}
+
+\usepackage{a4wide}  %Formát: evropský standard
+
+\parindent=0pt % odsazení 1. řádku odstavce
+\parskip=5pt   % mezera mezi odstavci
+\frenchspacing % aktivuje použití některých českých typografických pravidel
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin main text
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Source of data for the plotting and computation is Table 4 of the paper draft. 
+
+\begin{table}[h!]
+\begin{tabular}{rrrrrrr}
+\hline
+ $W_{\gamma Pb,n}$ (GeV) & $\sigma$ ($\mu$b) & unc. ($\mu$b)  & corr. ($\mu$b) & mig. ($\mu$b) & flux frac. ($\mu$b)  & IA ($\mu$b) \\
+\hline
+19.12 &8.80 &0.30 &0.67 &0.12 &0.06 &13 \\
+813.05 &60.23 &19.94 &8.21 &15.22 &8.81 & 196  \\
+\hline
+24.55 &13.86 &0.23 &1.10 &0.19 &0.11  & 18\\
+633.21 &47.80 &6.50 &10.76 &8.73 &5.16  & 167\\
+\hline
+31.53 &16.78 &0.59 &1.31 &0.35 &0.25  & 22\\
+493.14 &46.00 &6.32 &5.30 &6.72 &4.22  & 142\\
+\hline
+97.11 &20.21 &5.14 &3.13 &7.53 &3.81  & 49\\
+160.10 &27.03 &7.40 &4.96 &10.94 &5.44  & 68\\
+\hline
+124.69 &24.10 &0.70 &1.36 &0.23 &0.15 & 58\\
+\hline
+\end{tabular}
+\end{table}
+
+Putting these values to arrays which are used in the code.
+
+The energy:
+
+$W_{\gamma Pb,n}$    = \{ 19.12, 813.05, 24.55, 633.21, 31.53, 493.14, 97.11, 160.1, 124.69  \};
+
+------------
+
+The data cross section and the uncertainty due to the flux:
+
+$\sigma^{Data}_{\gamma Pb}$[9]  = \{ 8.80, 60.23, 13.86, 47.80, 16.78, 46.00, 20.21, 27.03, 24.10  \};
+
+$\Delta{\sigma^{Data}_{\gamma Pb}}$[9]  = \{ 0.06, 8.81,  0.11, 5.16, 0.25, 4.22, 3.81, 5.44, 0.15  \};
+
+------------
+
+The IA cross section and the corresponding uncertainty:
+
+$\sigma^{IA}_{\gamma Pb}$[9]  = \{ 13.20, 196.34, 17.95, 166.89, 22.46, 141.85, 49.16, 68.19, 57.92  \};
+
+$\Delta{\sigma^{IA}_{\gamma Pb}}$[9]  = \{ 0.66, 9.82, 0.90, 8.35, 1.12, 7.09, 2.46, 3.41, 2.90  \};
+
+------------
+
+The formula to compute the nuclear suppression factor is:
+
+\begin{equation}
+S_{Pb} = \sqrt[]{\frac{\sigma^{Data}_{\gamma Pb}}{\sigma^{IA}_{\gamma Pb}}}
+\end{equation}
+
+Then the error propagation formula is (considering the errors are uncorrelated)
+
+\begin{equation}
+\Delta S_{Pb} = \sqrt[]{ (\Delta{\sigma^{Data}_{\gamma Pb}})^2 \left(\frac{\partial S}{\partial \sigma^{Data}_{\gamma Pb}}\right)^2 + (\Delta{\sigma^{IA}_{\gamma Pb}})^2 \left(\frac{\partial S}{\partial \sigma^{IA}_{\gamma Pb}}\right)^2 }
+\end{equation}
+
+Doing the derivatives (omitting the minus signs as they will be squared anyway)
+
+\begin{equation}
+\Delta S_{Pb} = \sqrt[]{ (\Delta{\sigma^{Data}_{\gamma Pb}})^2 \left(\frac{1}{2 \sigma^{IA}_{\gamma Pb}  \sqrt[]{\frac{\sigma^{Data}_{\gamma Pb}}{\sigma^{IA}_{\gamma Pb}}} }\right)^2 + (\Delta{\sigma^{IA}_{\gamma Pb}})^2 \left(\frac{ \sigma^{Data}_{\gamma Pb} }{ 2 (\sigma^{IA}_{\gamma Pb})^2  \sqrt[]{\frac{\sigma^{Data}_{\gamma Pb}}{\sigma^{IA}_{\gamma Pb}}} }\right)^2 }
+\end{equation}
+
+Squaring and simplifying the brackets to get the final result
+
+\begin{equation}
+\Delta S_{Pb} = \sqrt[]{ (\Delta{\sigma^{Data}_{\gamma Pb}})^2 \left(\frac{1}{4 \sigma^{IA}_{\gamma Pb} \sigma^{Data}_{\gamma Pb}  }\right) + (\Delta{\sigma^{IA}_{\gamma Pb}})^2 \left(\frac{ \sigma^{Data}_{\gamma Pb} }{ 4 (\sigma^{IA}_{\gamma Pb})^3  }\right) }
+\end{equation}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% end main text 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

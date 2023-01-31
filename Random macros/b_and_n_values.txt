@@ -1,0 +1,36 @@
+-H1:
+b_val = 1.79
+n_val = 3.58
+---------------------------
+Just fit:
+---b+n free:
+b_val = 1.29472
+n_val = 2.65717
+
+---n fixed to 3.58:
+b_val = 0.981369
+b_err = 0.03
+
+---b fixed to 1.79:
+n_val = 2.16891
+n_err = 0.055
+
+---------------------------
+-From data with AD !=0
+---n fixed to 3.58:
+coh+disoc: 
+b_val = 0.6842
+b_err = 0.02
+
+only disoc: 
+b_val = 0.6948
+
+---n free:
+coh+disoc: 
+n_val = 3.0959
+b_val = 0.7305	
+b_err = 0.07
+
+only disoc:
+n_val = 2.8353
+b_val = 0.7847	

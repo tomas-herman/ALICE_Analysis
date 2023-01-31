@@ -1,0 +1,9 @@
+-----------------------------------------------------------
+Eff_CohJpsiToMu_PtCut = 0.115686
+Eff_CohJpsiToMu_PtAll = 0.119221
+Eff_CohPsi2sToMu_PtCut = 0.157256
+Eff_CohPsi2sToMu_PtAll = 0.166164
+Eff_CohPsi2sToMuPi_PtCut = 0.0687251
+Eff_CohPsi2sToMuPi_PtAll = 0.110924
+-----------------------------------------------------------
+
