@@ -1,5 +1,5 @@
 //
-// this program draws histograms of gamma gamma pt templates
+// this program creates histograms of gamma gamma pt templates and the J/Psi yeilds pt templates
 //
 
 // -----------------------------------------------------------------
@@ -25,69 +25,46 @@
 
 #include "utilities.h"
 
-#include "gammaPDFextractionParam/valGammaGammaPDF_iSel_1_ZN_0.h"
-#include "gammaPDFextractionParam/valGammaGammaPDF_iSel_1_ZN_1.h"
-#include "gammaPDFextractionParam/valGammaGammaPDF_iSel_1_ZN_2.h"
-#include "gammaPDFextractionParam/valGammaGammaPDF_iSel_1_ZN_3.h"
-#include "gammaPDFextractionParam/valGammaGammaPDF_iSel_1_ZN_5.h"
-#include "gammaPDFextractionParam/errGammaGammaPDF_iSel_1_ZN_0.h"
-#include "gammaPDFextractionParam/errGammaGammaPDF_iSel_1_ZN_1.h"
-#include "gammaPDFextractionParam/errGammaGammaPDF_iSel_1_ZN_2.h"
-#include "gammaPDFextractionParam/errGammaGammaPDF_iSel_1_ZN_3.h"
-#include "gammaPDFextractionParam/errGammaGammaPDF_iSel_1_ZN_5.h"
-const int iSel = 1;
-
-// #include "gammaPDFextractionParam/valGammaGammaPDF_iSel_0_ZN_0.h"
-// #include "gammaPDFextractionParam/valGammaGammaPDF_iSel_0_ZN_1.h"
-// #include "gammaPDFextractionParam/valGammaGammaPDF_iSel_0_ZN_2.h"
-// #include "gammaPDFextractionParam/valGammaGammaPDF_iSel_0_ZN_3.h"
-// #include "gammaPDFextractionParam/valGammaGammaPDF_iSel_0_ZN_5.h"
-// #include "gammaPDFextractionParam/errGammaGammaPDF_iSel_0_ZN_0.h"
-// #include "gammaPDFextractionParam/errGammaGammaPDF_iSel_0_ZN_1.h"
-// #include "gammaPDFextractionParam/errGammaGammaPDF_iSel_0_ZN_2.h"
-// #include "gammaPDFextractionParam/errGammaGammaPDF_iSel_0_ZN_3.h"
-// #include "gammaPDFextractionParam/errGammaGammaPDF_iSel_0_ZN_5.h"
-// const int iSel = 0;
-
-
 //-----------------------------------------------
 // Draw one plot
-void drawOneHistNorm(int znSelection, TH1D *h, TLegend *legend)
+void drawOneHistNorm(int znSelection, TH1D *h, TH1D *hY, TLegend *legend, int iSel)
 {
-  
+
   for (auto bin = 1; bin < nPtBins+1; bin++) {
-    if (znSelection==0) {
-      h->SetBinContent(bin,znGammaGammaVal0[bin-1]);
-      h->SetBinError(bin,znGammaGammaErr0[bin-1]);
-    }
-    if (znSelection==1) {
-      h->SetBinContent(bin,znGammaGammaVal1[bin-1]);
-      h->SetBinError(bin,znGammaGammaErr1[bin-1]);
-    }
-    if (znSelection==2) {
-      h->SetBinContent(bin,znGammaGammaVal2[bin-1]);
-      h->SetBinError(bin,znGammaGammaErr2[bin-1]);
-    }
-    if (znSelection==3) {
-      h->SetBinContent(bin,znGammaGammaVal3[bin-1]);
-      h->SetBinError(bin,znGammaGammaErr3[bin-1]);
-    }
-    if (znSelection==5) {
-      h->SetBinContent(bin,znGammaGammaVal5[bin-1]);
-      h->SetBinError(bin,znGammaGammaErr5[bin-1]);
-    }
+    // fill gamma pt shape histogram
+    h->SetBinContent(bin,getYieldFitResults(iSel, znSelection, "val",Form("nBkgdYield_%i",bin-1), bin-1));
+    h->SetBinError(bin,getYieldFitResults(iSel, znSelection, "err",Form("nBkgdYield_%i",bin-1), bin-1));
+    // fill yield histograms
+    hY->SetBinContent(bin,getYieldFitResults(iSel, znSelection, "val",Form("nCbYield_%i",bin-1), bin-1));
+    hY->SetBinError(bin,getYieldFitResults(iSel, znSelection, "err",Form("nCbYield_%i",bin-1), bin-1));
   }
 
-  // set up the output file to save the pt hist
-  TFile *fOut = new TFile(Form("ptHistos/ptHisto_gamma_%i.root",znSelection),"recreate");
+  // Make file for the yield histogram
+  TString fullpathY = Form("ptHistos/Selection_%i/ptHisto_yield_%i.root",iSel,znSelection);
+  gSystem->mkdir(fullpathY, kTRUE);
+  TFile *fOutY = new TFile(fullpathY,"recreate");
+  // set up the output file to save the gamma pt hist
+  TString fullpath = Form("ptHistos/Selection_%i/ptHisto_gamma_%i.root",iSel,znSelection);
+  gSystem->mkdir(fullpath, kTRUE);
+  TFile *fOut = new TFile(fullpath,"recreate");
+  
+  // normalize the yields 
+  if (hY->GetSumw2N() == 0) hY->Sumw2(kTRUE);
+  hY->Scale(1., "width");
+  hY->Scale(1./hY->Integral(), "");
+  // write the yield pt histo to the output file
+  fOutY->cd();
+  hY->Write();
+  fOutY->Close();
 
-  double factor = 1.;
+  // normalize the gamma pt teplate
   if (h->GetSumw2N() == 0) h->Sumw2(kTRUE);
-  h->Scale(factor/h->Integral(), "width");
+  h->Scale(1., "width");
+  h->Scale(1/h->Integral(), "");
   h->Draw("HIST, E, SAME");
   h->SetLineWidth(1);
   
-  // write the histo to the output file
+  // write the gama pt histo to the output file
   fOut->cd();
   h->Write();
   fOut->Close();
@@ -116,7 +93,7 @@ void drawOneHistNorm(int znSelection, TH1D *h, TLegend *legend)
 
 //-----------------------------------------------
 // Draw the final comparison
-void drawHist(int znSelection = 3)
+void makePtSpectra(int znSelection = 5, int iSel = 1)
 {
   TCanvas *c1 = new TCanvas("c1","Gamm Gamma PDFs",1200,800);
 
@@ -159,9 +136,9 @@ void drawHist(int znSelection = 3)
   SLh->SetLineWidth(1);
   SLh->GetXaxis()->SetTitle("pt [GeV/c]");
   SLh->GetYaxis()->SetTitle("PDF norm to integral*bin width");
-  double factor = 1.;
   if (SLh->GetSumw2N() == 0) SLh->Sumw2(kTRUE);
-  SLh->Scale(factor/SLh->Integral(), "width");
+  SLh->Scale(1., "width");
+  SLh->Scale(1./SLh->Integral(), "");
   SLh->Draw("HIST, E, SAME");
   SLh->SetMinimum(0.0);  // Define Y minimum
   legend->AddEntry(SLh,"STARlight","f");
@@ -172,11 +149,17 @@ void drawHist(int znSelection = 3)
   TH1D *h3 = new TH1D("h3","gamma3 pt template",nPtBins,ptBinBoundariesArr);
   TH1D *h5 = new TH1D("h5","gamma5 pt template",nPtBins,ptBinBoundariesArr);
 
-  if (znSelection==0) drawOneHistNorm(0, h0, legend);
-  if (znSelection==1) drawOneHistNorm(1, h1, legend);
-  if (znSelection==2) drawOneHistNorm(2, h2, legend);
-  if (znSelection==3) drawOneHistNorm(3, h3, legend);
-  if (znSelection==5) drawOneHistNorm(5, h5, legend);
+  TH1D *h0Y = new TH1D("h0Y","yield0 pt template",nPtBins,ptBinBoundariesArr);
+  TH1D *h1Y = new TH1D("h1Y","yield1 pt template",nPtBins,ptBinBoundariesArr);
+  TH1D *h2Y = new TH1D("h2Y","yield2 pt template",nPtBins,ptBinBoundariesArr);
+  TH1D *h3Y = new TH1D("h3Y","yield3 pt template",nPtBins,ptBinBoundariesArr);
+  TH1D *h5Y = new TH1D("h5Y","yield5 pt template",nPtBins,ptBinBoundariesArr);
+
+  if (znSelection==0) drawOneHistNorm(0, h0, h0Y, legend, iSel);
+  if (znSelection==1) drawOneHistNorm(1, h1, h1Y, legend, iSel);
+  if (znSelection==2) drawOneHistNorm(2, h2, h2Y, legend, iSel);
+  if (znSelection==3) drawOneHistNorm(3, h3, h3Y, legend, iSel);
+  if (znSelection==5) drawOneHistNorm(5, h5, h5Y, legend, iSel);
 
   legend->SetFillStyle(0);
   legend->SetBorderSize(0);

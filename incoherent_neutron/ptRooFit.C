@@ -356,14 +356,17 @@ void doOnePtFit(TTree *dataTree, int iSel, int znSelection,
 
   c1->Draw();
   //---Save as pdf
-  char ptFit[120];
-  sprintf(ptFit,"ptPlots/Selection_%i/pt_fit_%.2f_y_%.2f_%.2f_mass_%.2f_ZNclass_%d.png", iSel, minRap,maxRap,minMass,maxMass,znSelection);
-  c1->SaveAs(ptFit);
+  TString filepath = Form("ptPlots/Selection_%i/pt_fit_%.2f_y_%.2f_%.2f_mass_%.2f_ZNclass_%d.png", iSel, minRap,maxRap,minMass,maxMass,znSelection);
+  gSystem->mkdir(filepath, kTRUE);
+  c1->SaveAs(filepath.Data());
+
   cout << "chi^2 = " << frame->chiSquare() << endl;
   cout << " Entries " << inData.numEntries() << endl;
 
   // set up the output file to save the fit results
-  TFile *fOut = new TFile(Form("ptFitResults/Selection_%i/Data_ZNclass%d_%.2f_y_%.2f_%.2f_mass_%.2f.root",iSel,znSelection,abs(minRap),abs(maxRap),minMass,maxMass),"recreate");
+  TString fullpath = Form("ptFitResults/Selection_%i/Data_ZNclass%d_%.2f_y_%.2f_%.2f_mass_%.2f.root",iSel,znSelection,abs(minRap),abs(maxRap),minMass,maxMass);
+  gSystem->mkdir(fullpath, kTRUE);
+  TFile *fOut = new TFile(fullpath,"recreate");
 
   TVector fcParam0(2), fcParam1(2), fcParam2(2), fcParam3(2), fcParam4(2), fcParam5(2), fcParam6(2);
   fcParam0[0] = fc0.getVal();

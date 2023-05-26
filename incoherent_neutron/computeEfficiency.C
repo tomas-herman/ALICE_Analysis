@@ -109,7 +109,7 @@ void computeOneEfficiency(int iData, int iSel,
   } // end loop over all entries
 
   //-------------------
-  // Set overflow reco bin to 0
+  // Set overflow reco bin to 0 to avoid tefficeincy error due to more reco than gen events
   recoHist.SetBinContent(nBins+1,0);
   recoHistIntegrated.SetBinContent(2,0);
   recoHistAll.SetBinContent(2,0);
@@ -136,7 +136,9 @@ void computeOneEfficiency(int iData, int iSel,
   cout << "Efficiency in pt range (" << 0.3 << "," << 1.5 << ") is: " << effHistIntegrated->GetEfficiency(1) << endl;
   cout << "Efficiency in pt range (" << 0.0 << "," << 3.0 << ") is: " << effHistAll->GetEfficiency(1) << endl;
 
-  TFile *fOut = new TFile(Form("efficiency/eff_data_%i_%.2f_y_%.2f.root",iData,abs(minY),abs(maxY)),"recreate");
+  TString fullpath = Form("efficiency/Selection_%i/eff_data_%i_%.2f_y_%.2f.root",iSel,iData,abs(minY),abs(maxY))
+  gSystem->mkdir(fullpath, kTRUE);
+  TFile *fOut = new TFile(fullpath,"recreate");
   fOut->cd();
   recoHist.Write();
   genHist.Write();

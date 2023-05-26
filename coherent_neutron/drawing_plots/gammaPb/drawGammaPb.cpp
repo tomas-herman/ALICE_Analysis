@@ -250,10 +250,11 @@ void drawGammaPb()
   frame->SetLabelSize(fSiz);
   frame->SetTitleSize(fSiz, "Y");  
   frame->SetLabelSize(fSiz, "Y");
-  frame->SetTitle(";W_{#gammaPb,n} (GeV);#sigma(#gammaPb) (#mub)");
+  frame->SetTitle(";#it{W}_{#gammaPb,n} (GeV);#sigma(#gammaPb) (#mub)");
   
   gPad->SetMargin(0.10,0.05,0.12,0.10);
   gPad->SetLogy();
+  gPad->SetTicky(1);
   gPad->SetLogx();
   
   gStyle->SetOptStat(0);
@@ -399,13 +400,13 @@ void drawGammaPb()
   //--- plot CMS data
   TGraphErrors *CMSDataErr2  = new TGraphErrors(6, CMS_W, CMS_sig, CMSySize, CMS_sys);
   CMSDataErr2->SetFillColor(cError);
-  CMSDataErr2->Draw("2");
+  // CMSDataErr2->Draw("2");
 
   TGraphErrors *CMSDataErr1  = new TGraphErrors(6, CMS_W, CMS_sig, CMSySize, CMS_teo);
   CMSDataErr1->SetFillColor(cData);
   CMSDataErr1->SetFillStyle(0);
   CMSDataErr1->SetLineWidth(2);
-  CMSDataErr1->Draw("2");
+  // CMSDataErr1->Draw("2");
 
   TGraphErrors *cmsData = new TGraphErrors(6, CMS_W, CMS_sig, NULL, CMS_sta);
   cmsData->SetMarkerColor(kRed+1);
@@ -413,7 +414,7 @@ void drawGammaPb()
   cmsData->SetMarkerSize(1.0);
   cmsData->SetLineColor(kRed+1);
   cmsData->SetLineWidth(2);
-  cmsData->Draw("zpsame");
+  // cmsData->Draw("zpsame");
 
 
   //--- plot data from Guillermo paper Phys.Rev.C 96 (2017) 1, 015203: https://inspirehep.net/literature/1491190
@@ -438,14 +439,15 @@ void drawGammaPb()
   double xl = 0.14, dxl = 0.2;
   double yl = 0.58, dyl = 0.28;
   // yl = 0.44, dyl = 0.42; // without CMS
+  // yl = 0.652596, dyl = 0.2074; //without models
   yl = 0.393333, dyl = 0.4666666;
   TLegend* leg1 = new TLegend(xl, yl, xl+dxl, yl+dyl);
   leg1->SetFillStyle(0);
   leg1->SetTextSize(fSiz-0.010);
-  leg1->AddEntry(aliceData,"ALICE, #scale[0.9]{Pb-Pb #sqrt{#it{s}_{NN}} = 5.02 TeV}","EP");
-  leg1->AddEntry(cmsData,"CMS, #scale[0.9]{Pb-Pb #sqrt{#it{s}_{NN}} = 5.02 TeV} #scale[0.8]{(arXiv:2303.16984})","EP");
-  leg1->AddEntry(evgenyData,"GKSZ, #scale[0.9]{using ALICE Pb-Pb #sqrt{#it{s}_{NN}} = 2.76 TeV} #scale[0.8]{(PLB 726 (2013) 290-295)} ","EP");
-  leg1->AddEntry(guillermoData,"Contreras, #scale[0.9]{using ALICE Pb-Pb #sqrt{#it{s}_{NN}} = 2.76 TeV} #scale[0.8]{(PRC 96 (2017) 1, 015203)}","EP");
+  leg1->AddEntry(aliceData,"ALICE, #scale[0.9]{Pb#kern[0.15]{#minus}Pb #sqrt{#it{s}_{NN}} = 5.02 TeV}","EP");
+  // leg1->AddEntry(cmsData,"CMS, #scale[0.9]{Pb#kern[0.15]{#minus}Pb #sqrt{#it{s}_{NN}} = 5.02 TeV} #scale[0.8]{(arXiv:2303.16984})","EP");
+  leg1->AddEntry(evgenyData,"Guzey et al., #scale[0.9]{using ALICE Pb#kern[0.15]{#minus}Pb #sqrt{#it{s}_{NN}} = 2.76 TeV} #scale[0.8]{(PLB 726 (2013) 290-295)} ","EP");
+  leg1->AddEntry(guillermoData,"Contreras, #scale[0.9]{using ALICE Pb#kern[0.15]{#minus}Pb #sqrt{#it{s}_{NN}} = 2.76 TeV} #scale[0.8]{(PRC 96 (2017) 015203)}","EP");
   leg1->AddEntry(predIA,"Impulse approximation","l");
   leg1->AddEntry(predSL,"STARlight","l");
   leg1->AddEntry(epsC,"EPS09 LO","l");

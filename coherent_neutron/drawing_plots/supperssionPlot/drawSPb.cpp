@@ -276,9 +276,10 @@ void drawSPb()
   frame->SetLabelSize(fSiz);
   frame->SetTitleSize(fSiz, "Y");  
   frame->SetLabelSize(fSiz, "Y");
-  frame->SetTitle(";W_{#gammaPb,n} (GeV);S_{Pb}");
+  frame->SetTitle(";#it{W}_{#gammaPb,n} (GeV);#it{S}_{Pb}");
   
   gPad->SetMargin(0.10,0.05,0.12,0.10);
+  gPad->SetTicky(1);
   gPad->SetLogx();
   
   gStyle->SetOptStat(0);
@@ -423,6 +424,14 @@ void drawSPb()
     sPb_er1[i]  = ALICE_unc[i]/(2*sqrt(ALICE_sig[i]*IA_sig[i]));
     sPb_er2[i]  = ALICE_er2[i]/(2*sqrt(ALICE_sig[i]*IA_sig[i]));
     sPb_er3[i]  = sqrt( pow(ALICE_flu[i],2)/(4*ALICE_sig[i]*IA_sig[i]) + pow(IA_sys[i],2)*ALICE_sig[i]/(4*pow(IA_sig[i],3)) );
+    // cout << "W: " << ALICE_W[i] << endl;
+    // cout << "S_Pb: " << sPb_val[i] << endl;
+    // cout << "Uncor error: " << ALICE_unc[i]/(2*sqrt(ALICE_sig[i]*IA_sig[i])) << endl;
+    // cout << "Cor error: " << ALICE_cor[i]/(2*sqrt(ALICE_sig[i]*IA_sig[i])) << endl;
+    // cout << "Migrations: " << ALICE_mig[i]/(2*sqrt(ALICE_sig[i]*IA_sig[i])) << endl;
+    // cout << "Flux error: " << ALICE_flu[i]/(2*sqrt(ALICE_sig[i]*IA_sig[i])) << endl;
+    // cout << "IA error: " << sqrt( pow(IA_sys[i],2)*ALICE_sig[i]/(4*pow(IA_sig[i],3)) ) << endl;
+    // cout << "-----------------" << endl;
     // cout << "W: " << ALICE_W[i] << ", IA SL: " << predIAsl_source->Eval(ALICE_W[i]) << ", IA GKZ: " << IA_sig[i] << endl;
     // cout << IA_sys[i] << ", " ;
   }
@@ -492,13 +501,13 @@ void drawSPb()
   //--- plot CMS data
   TGraphErrors *CMSDataErr2  = new TGraphErrors(6, CMS_W, CMS_val, CMSySize, CMS_sys);
   CMSDataErr2->SetFillColor(cError);
-  CMSDataErr2->Draw("2");
+  // CMSDataErr2->Draw("2");
 
   TGraphErrors *CMSDataErr1  = new TGraphErrors(6, CMS_W, CMS_val, CMSySize, CMS_teo);
   CMSDataErr1->SetFillColor(cData);
   CMSDataErr1->SetFillStyle(0);
   CMSDataErr1->SetLineWidth(2);
-  CMSDataErr1->Draw("2");
+  // CMSDataErr1->Draw("2");
 
   TGraphErrors *cmsData = new TGraphErrors(6, CMS_W, CMS_val, NULL, CMS_sta);
   cmsData->SetMarkerColor(kRed+1);
@@ -506,7 +515,7 @@ void drawSPb()
   cmsData->SetMarkerSize(0.9);
   cmsData->SetLineColor(kRed+1);
   cmsData->SetLineWidth(2);
-  cmsData->Draw("zpsame");
+  // cmsData->Draw("zpsame");
 
   //--- plot data from Guillermo paper Phys.Rev.C 96 (2017) 1, 015203: https://inspirehep.net/literature/1491190
   TGraphAsymmErrors* guillermoData = new TGraphAsymmErrors(3,guillermo_W, guillermo_sig,NULL,NULL,guillermo_stasys_l,guillermo_stasys_h);
@@ -536,10 +545,10 @@ void drawSPb()
   TLegend* leg1 = new TLegend(xl, yl, xl+dxl, yl+dyl);
   leg1->SetFillStyle(0);
   leg1->SetTextSize(fSiz-0.010);
-  leg1->AddEntry(aliceData,"ALICE, #scale[0.9]{Pb-Pb #sqrt{#it{s}_{NN}} = 5.02 TeV}","EP");
-  leg1->AddEntry(cmsData,"CMS, #scale[0.9]{Pb-Pb #sqrt{#it{s}_{NN}} = 5.02 TeV} #scale[0.8]{(arXiv:2303.16984})","EP");
-  leg1->AddEntry(evgenyData,"GKSZ, #scale[0.9]{using ALICE Pb-Pb #sqrt{#it{s}_{NN}} = 2.76 TeV} #scale[0.8]{(PLB 726 (2013) 290-295)} ","EP");
-  leg1->AddEntry(guillermoData,"Contreras, #scale[0.9]{using ALICE Pb-Pb #sqrt{#it{s}_{NN}} = 2.76 TeV} #scale[0.8]{(PRC 96 (2017) 1, 015203)}","EP");
+  leg1->AddEntry(aliceData,"ALICE, #scale[0.9]{Pb#kern[0.15]{#minus}Pb #sqrt{#it{s}_{NN}} = 5.02 TeV}","EP");
+  // leg1->AddEntry(cmsData,"CMS, #scale[0.9]{Pb#kern[0.15]{#minus}Pb #sqrt{#it{s}_{NN}} = 5.02 TeV} #scale[0.8]{(arXiv:2303.16984})","EP");
+  leg1->AddEntry(evgenyData,"Guzey et al., #scale[0.9]{using ALICE Pb#kern[0.15]{#minus}Pb #sqrt{#it{s}_{NN}} = 2.76 TeV} #scale[0.8]{(PLB 726 (2013) 290-295)} ","EP");
+  leg1->AddEntry(guillermoData,"Contreras, #scale[0.9]{using ALICE Pb#kern[0.15]{#minus}Pb #sqrt{#it{s}_{NN}} = 2.76 TeV} #scale[0.8]{(PRC 96 (2017) 015203)}","EP");
   leg1->AddEntry(predIA,"Impulse approximation","l");
   leg1->AddEntry(predSL,"STARlight","l");
   // leg1->AddEntry(epsC,"EPS09 LO","l");

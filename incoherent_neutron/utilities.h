@@ -15,6 +15,30 @@ TTree *getTree(int iData, int iSel)
   // return the tree
   return ((TTree *) dataFile->Get("fitTree"));
 }
+//-----------------------------------------------
+// Get the yields frm gamma mass fit results
+double getYieldFitResults(int iSel, int znSelection, TString valOrErr,TString paramName, int bin)
+{
+  TFile *inFile = TFile::Open(Form("zdcClassYields/Selection_%i/Yields_ZNclass%d.root",iSel,znSelection));
+
+  TVector *paramVec;
+  if (paramName.Contains(Form("nCbYield_%i",bin))) { paramVec = (TVector*)inFile->Get(Form("nCbYield_%i",bin)); }
+  else if (paramName.Contains(Form("nBkgdYield_%i",bin))) { paramVec = (TVector*)inFile->Get(Form("nBkgdYield_%i",bin)); }
+  else {
+    cout << "Parameter " << paramName.Data() << " not found! Exiting." << endl;
+    throw;
+  }
+
+  double par;
+  // return the value
+  if (valOrErr.Contains("val")){ par = paramVec->operator[](0); }
+  else if (valOrErr.Contains("err")){ par = paramVec->operator[](1); }
+  else {
+    cout << "Select val or err. " << valOrErr.Data() << " is not known! Exiting." << endl;
+    throw;
+  }
+  return (par);  
+}
 
 //-----------------------------------------------
 // Get the mass fit results
@@ -22,19 +46,18 @@ double getMassFitResults(int iSel, int znSelection, TString valOrErr,TString par
 {
   TFile *inFile = TFile::Open(Form("massFitResults/Selection_%i/Data_ZNclass%d_%.2f_y_%.2f_%.2f_pt_%.2f.root",iSel,znSelection,abs(minRap),abs(maxRap),minPt,maxPt));
 
-  TVector *ptrParam;
-  if (paramName.Contains("nCbParam")) { ptrParam = (TVector*)inFile->Get("nCbParam"); }
-  else if (paramName.Contains("nBkgdParam")) { ptrParam = (TVector*)inFile->Get("nBkgdParam"); }
+  TVector *paramVec;
+  if (paramName.Contains("nCbParam")) { paramVec = (TVector*)inFile->Get("nCbParam"); }
+  else if (paramName.Contains("nBkgdParam")) { paramVec = (TVector*)inFile->Get("nBkgdParam"); }
   else {
     cout << "Parameter " << paramName.Data() << " not found! Exiting." << endl;
     throw;
   }
 
-  TVector Param = *ptrParam;
   double par;
-  // return the histo
-  if (valOrErr.Contains("val")){ par = Param[0]; }
-  else if (valOrErr.Contains("err")){ par = Param[1]; }
+  // return the value
+  if (valOrErr.Contains("val")){ par = paramVec->operator[](0); }
+  else if (valOrErr.Contains("err")){ par = paramVec->operator[](1); }
   else {
     cout << "Select val or err. " << valOrErr.Data() << " is not known! Exiting." << endl;
     throw;
@@ -48,30 +71,29 @@ double getMcMassParam(int iData,TString valOrErr,TString paramName,double minPt,
 {
   TFile *inFile = TFile::Open(Form("massMcParameters/mcParam_data_%i_%.2f_y_%.2f_%.2f_pt_%.2f.root",iData,abs(minRap),abs(maxRap),minPt,maxPt));
 
-  TVector *ptrParam;
-  if (paramName.Contains("m0Param")) { ptrParam = (TVector*)inFile->Get("m0Param"); }
-  else if (paramName.Contains("sigmaLParam")) { ptrParam = (TVector*)inFile->Get("sigmaLParam"); }
-  else if (paramName.Contains("sigmaRParam")) { ptrParam = (TVector*)inFile->Get("sigmaRParam"); }
-  else if (paramName.Contains("nLParam")) { ptrParam = (TVector*)inFile->Get("nLParam"); }
-  else if (paramName.Contains("nRParam")) { ptrParam = (TVector*)inFile->Get("nRParam"); }
-  else if (paramName.Contains("alphaLParam")) { ptrParam = (TVector*)inFile->Get("alphaLParam"); }
-  else if (paramName.Contains("alphaRParam")) { ptrParam = (TVector*)inFile->Get("alphaRParam"); }
+  TVector *paramVec;
+  if (paramName.Contains("m0Param")) { paramVec = (TVector*)inFile->Get("m0Param"); }
+  else if (paramName.Contains("sigmaLParam")) { paramVec = (TVector*)inFile->Get("sigmaLParam"); }
+  else if (paramName.Contains("sigmaRParam")) { paramVec = (TVector*)inFile->Get("sigmaRParam"); }
+  else if (paramName.Contains("nLParam")) { paramVec = (TVector*)inFile->Get("nLParam"); }
+  else if (paramName.Contains("nRParam")) { paramVec = (TVector*)inFile->Get("nRParam"); }
+  else if (paramName.Contains("alphaLParam")) { paramVec = (TVector*)inFile->Get("alphaLParam"); }
+  else if (paramName.Contains("alphaRParam")) { paramVec = (TVector*)inFile->Get("alphaRParam"); }
 
-  else if (paramName.Contains("lambdaParam")) { ptrParam = (TVector*)inFile->Get("lambdaParam"); }
-  else if (paramName.Contains("a2Param")) { ptrParam = (TVector*)inFile->Get("a2Param"); }
-  else if (paramName.Contains("a3Param")) { ptrParam = (TVector*)inFile->Get("a3Param"); }
-  else if (paramName.Contains("a4Param")) { ptrParam = (TVector*)inFile->Get("a4Param"); }
+  else if (paramName.Contains("lambdaParam")) { paramVec = (TVector*)inFile->Get("lambdaParam"); }
+  else if (paramName.Contains("a2Param")) { paramVec = (TVector*)inFile->Get("a2Param"); }
+  else if (paramName.Contains("a3Param")) { paramVec = (TVector*)inFile->Get("a3Param"); }
+  else if (paramName.Contains("a4Param")) { paramVec = (TVector*)inFile->Get("a4Param"); }
 
   else {
     cout << "Parameter " << paramName.Data() << " not found! Exiting." << endl;
     throw;
   }
   
-  TVector Param = *ptrParam;
   double par;
-  // return the histo
-  if (valOrErr.Contains("val")){ par = Param[0]; }
-  else if (valOrErr.Contains("err")){ par = Param[1]; }
+  // return the value
+  if (valOrErr.Contains("val")){ par = paramVec->operator[](0); }
+  else if (valOrErr.Contains("err")){ par = paramVec->operator[](1); }
   else {
     cout << "Select val or err. " << valOrErr.Data() << " is not known! Exiting." << endl;
     throw;
@@ -85,18 +107,17 @@ double getPtFitResults(int iSel, int znSelection, TString valOrErr,TString param
 {
   TFile *inFile = TFile::Open(Form("ptFitResults/Selection_%i/Data_ZNclass%d_%.2f_y_%.2f_%.2f_mass_%.2f.root",iSel,znSelection,abs(minRap),abs(maxRap),minMass,maxMass));
 
-  TVector *ptrParam;
-  if (paramName.Contains("fiParam")) { ptrParam = (TVector*)inFile->Get("fiParam"); }
+  TVector *paramVec;
+  if (paramName.Contains("fiParam")) { paramVec = (TVector*)inFile->Get("fiParam"); }
   else {
     cout << "Parameter " << paramName.Data() << " not found! Exiting." << endl;
     throw;
   }
 
-  TVector Param = *ptrParam;
   double par;
-  // return the histo
-  if (valOrErr.Contains("val")){ par = Param[0]; }
-  else if (valOrErr.Contains("err")){ par = Param[1]; }
+  // return the value
+  if (valOrErr.Contains("val")){ par = paramVec->operator[](0); }
+  else if (valOrErr.Contains("err")){ par = paramVec->operator[](1); }
   else {
     cout << "Select val or err. " << valOrErr.Data() << " is not known! Exiting." << endl;
     throw;

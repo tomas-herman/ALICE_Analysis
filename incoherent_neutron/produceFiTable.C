@@ -53,8 +53,6 @@ void produceFiTable(int iData = 0, int iSel = 1)
     mMin = 3.3;
     mMax = 4;
   }
-  // get the input tree
-  TTree *dataTree = getTree(iData, iSel);
   // define kinematic ranges for data to fit 
   float minRap[4] = {-4.0, -4.00, -3.50, -3.00};
   float maxRap[4] = {-2.5, -3.50, -3.00, -2.50};

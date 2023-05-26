@@ -162,11 +162,12 @@ void doOneSimpleDscbFit(TTree *dataTree, int iSel, int znSelection,
 }
 
 // -----------------------------------------------------------------
-// do one mass fit for MC
+// do one mass fit 
 void doOneFit(TTree *dataTree, int iSel, int znSelection,
 		    double minPt, double maxPt,
 		    double minMass, double maxMass,
-		    double minRap, double maxRap)
+		    double minRap, double maxRap,
+        TFile *fOut, int bin)
 {
   // define number of bins
   auto nBins = 80;
@@ -275,47 +276,18 @@ void doOneFit(TTree *dataTree, int iSel, int znSelection,
   N_bkgd_JPsi_mass_range[1] =  I_bkgd_JPsi_mass_range->getVal()*N_BG.getError();  
 
   // ---Save the J/Psi yields to a file
-  char nYieldFileName[150];
-  sprintf(nYieldFileName,"nYield/nYield_iSel_%i_ZN_%i.h", iSel, znSelection);
+  TVector nCbYield(2);
+  nCbYield[0] = N_JPsi[0];
+  nCbYield[1] = N_JPsi[1];
 
-  ofstream nYieldFileVal;
-  nYieldFileVal.open (nYieldFileName, ios::app);
-  nYieldFileVal << N_JPsi[0] << " +/- " << N_JPsi[1]<< endl;
-  nYieldFileVal.close();
+  TVector nBkgdYield(2);
+  nBkgdYield[0] = N_bkgd_JPsi_mass_range[0];
+  nBkgdYield[1] = N_bkgd_JPsi_mass_range[1];
 
-  // ---Save the values to a file
-  char valFileName[150];
-  sprintf(valFileName,"gammaPDFextractionParam/valGammaGammaPDF_iSel_%i_ZN_%i.h", iSel, znSelection);
-
-  ofstream gammaGammaFileVal;
-  gammaGammaFileVal.open (valFileName, ios::app);
-  if(minPt == 0.0){
-    gammaGammaFileVal << "double znGammaGammaVal" << znSelection << "[" <<  nPtBins << "]={";
-  }
-  if(maxPt < 3.0){
-    gammaGammaFileVal << N_bkgd_JPsi_mass_range[0] << ", ";
-  }
-  else{
-    gammaGammaFileVal << N_bkgd_JPsi_mass_range[0] << "};" << endl;
-  }
-  gammaGammaFileVal.close();
-
-  // ---Save the errors to a file
-  char errFileName[150];
-  sprintf(errFileName,"gammaPDFextractionParam/errGammaGammaPDF_iSel_%i_ZN_%i.h", iSel, znSelection);
-
-  ofstream gammaGammaFileErr;
-  gammaGammaFileErr.open (errFileName, ios::app);
-  if(minPt == 0.0){
-    gammaGammaFileErr << "double znGammaGammaErr" << znSelection << "[" <<  nPtBins << "]={";
-  }
-  if(maxPt < 3.0){
-    gammaGammaFileErr << N_bkgd_JPsi_mass_range[1] << ", ";
-  }
-  else{
-    gammaGammaFileErr << N_bkgd_JPsi_mass_range[1] << "};" << endl;
-  }
-  gammaGammaFileErr.close();
+  // write the histo to the output file
+  fOut->cd();
+  nCbYield.Write(Form("nCbYield_%i",bin));
+  nBkgdYield.Write(Form("nBkgdYield_%i",bin));
 
   //-----------------------------------------------------------
   // Draw mass histogram
@@ -391,14 +363,14 @@ void doOneFit(TTree *dataTree, int iSel, int znSelection,
   leg->AddEntry((TObject*)0,Form("N_{bg(2.85,3.35)} = %3.0f #pm %3.0f", N_bkgd_JPsi_mass_range[0],N_bkgd_JPsi_mass_range[1]),"");
   leg->Draw();
   //---Save as pdf
-  char massFit[120];
-  sprintf(massFit,"massPlots/Selection_%i/GammaMass_fit_%.2f_y_%.2f_%.2f_pt_%.2f_ZNclass_%d.png", iSel, minRap,maxRap,minPt,maxPt,znSelection);
-  c1->SaveAs(massFit);
+  TString filepath = Form("massPlots/Selection_%i/GammaMass_fit_%.2f_y_%.2f_%.2f_pt_%.2f_ZNclass_%d.png", iSel, minRap,maxRap,minPt,maxPt,znSelection);
+  gSystem->mkdir(filepath, kTRUE);
+  c1->SaveAs(filepath.Data());
   cout << "chi^2 = " << frame->chiSquare() << endl;
   cout << " Entries " << inData.numEntries() << endl;
 }
 
-void dscbRooFit(int iData = 0, int iSel = 1, int znSelection = 3)
+void yieldRooFit(int iData = 0, int iSel = 1, int znSelection = 5)
 {
   // set mass ranges for the fit
   float mMin = 2.55; // 2.85;
@@ -421,26 +393,17 @@ void dscbRooFit(int iData = 0, int iSel = 1, int znSelection = 3)
   // ---------
   // make a fit
   // doOneSimpleDscbFit(dataTree, iSel, znSelection, 0, 3, 2,5, minRap[0], maxRap[0]);
-  
   // ---------
-  // Delete the previous header files with saved values
-  char nYieldFileName[150];
-  sprintf(nYieldFileName,"nYield/nYield_iSel_%i_ZN_%i.h", iSel, znSelection);
-  char valFileName[150];
-  sprintf(valFileName,"gammaPDFextractionParam/valGammaGammaPDF_iSel_%i_ZN_%i.h", iSel, znSelection);
-  char errFileName[150];
-  sprintf(errFileName,"gammaPDFextractionParam/errGammaGammaPDF_iSel_%i_ZN_%i.h", iSel, znSelection);
-  try {
-    std::filesystem::remove(valFileName);
-    std::filesystem::remove(errFileName);
-    std::filesystem::remove(nYieldFileName);
-  }
-  catch(const std::filesystem::filesystem_error& err) {
-     std::cout << "filesystem error: " << err.what() << '\n';
-  }
-  for (auto bin = 0; bin < nPtBins; bin++) {
-    doOneFit(dataTree, iSel, znSelection, ptBinBoundariesVec[bin], ptBinBoundariesVec[bin+1], mMin, mMax, minRap[0], maxRap[0]);
-  }
 
+  // Create the output file for the yields
+  TString fullpath = Form("zdcClassYields/Selection_%i/Yields_ZNclass%d.root",iSel,znSelection);
+  gSystem->mkdir(fullpath, kTRUE);
+  TFile *fOut = new TFile(fullpath,"recreate");
+
+  // Do the fits
+  for (auto bin = 0; bin < nPtBins; bin++) {
+    doOneFit(dataTree, iSel, znSelection, ptBinBoundariesVec[bin], ptBinBoundariesVec[bin+1], mMin, mMax, minRap[0], maxRap[0], fOut, bin);
+  }
+  fOut->Close();
 }
 

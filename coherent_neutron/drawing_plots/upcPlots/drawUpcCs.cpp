@@ -105,14 +105,14 @@ void readSTARlight(TGraph *gr, TString path)
   ifs.close();
 }
 //_____________________________________________________________________________
-void SetStyle(TH1D* h, Color_t color, Style_t style, Width_t width = 2)
+void SetStyle(TH1D* h, Color_t color, Style_t style, Width_t width = 3)
 {
   h->SetLineColor(color);
   h->SetLineStyle(style);
   h->SetLineWidth(width);
 }
 //_____________________________________________________________________________
-void SetStyle(TGraph* g, Color_t color, Style_t style, Width_t width = 2)
+void SetStyle(TGraph* g, Color_t color, Style_t style, Width_t width = 3)
 {
   g->SetLineColor(color);
   g->SetLineStyle(style);
@@ -227,7 +227,7 @@ TGraph *getUpcCsIaN00n(int neutronClass)
   return (TGraph*) g;
 }
 //_____________________________________________________________________________
-void drawUpcCs(Int_t selectionFlag = 4)
+void drawUpc(Int_t selectionFlag = 4)
 {
   // configure layout of the plot
   //--- ranges
@@ -235,18 +235,18 @@ void drawUpcCs(Int_t selectionFlag = 4)
 
   if (selectionFlag == 1) gymax = 8.5;
   if (selectionFlag == 2) gymax = 2.5;
-  if (selectionFlag == 3) gymax = 1.2;
+  if (selectionFlag == 3) gymax = 1.3;
   if (selectionFlag == 4) gymax = 1.05;
 
   //--- style, title...
   TCanvas* c1 = new TCanvas("c1","c1",1000,700);
   TH1F* frame = gPad->DrawFrame(gxmin,gymin,gxmax,gymax);
   
-  float fSiz = 0.045;
+  float fSiz = 0.055;
   int iFont = 42;
   frame->GetXaxis()->SetMoreLogLabels();
   frame->GetXaxis()->SetTitleOffset(1.0);
-  frame->GetYaxis()->SetTitleOffset(1.0);
+  frame->GetYaxis()->SetTitleOffset(0.9);
   frame->GetXaxis()->SetTitleSize(fSiz);
   frame->GetYaxis()->SetTitleSize(fSiz);
   frame->GetXaxis()->SetLabelSize(fSiz);
@@ -260,7 +260,7 @@ void drawUpcCs(Int_t selectionFlag = 4)
   frame->SetLabelSize(fSiz);
   frame->SetTitleSize(fSiz, "Y");  
   frame->SetLabelSize(fSiz, "Y");
-  frame->SetTitle(";y;d#sigma/dy (mb)");
+  frame->SetTitle(";#it{y};d#sigma/d#it{y} (mb)");
   
   gPad->SetMargin(0.10,0.03,0.12,0.03);
 
@@ -408,32 +408,32 @@ void drawUpcCs(Int_t selectionFlag = 4)
 
   // Input ALICE data
   int nP;
-  if (selectionFlag == 1) nP = 6;
-  if (selectionFlag == 2) nP = 3;
+  if (selectionFlag == 1) nP = 5;
+  if (selectionFlag == 2) nP = 2;
   if (selectionFlag == 3) nP = 3;
-  if (selectionFlag == 4) nP = 6;
+  if (selectionFlag == 4) nP = 5;
   
-  double ALICE_y_0N0N[6]      = { 0.50, 0.00, -0.50, -2.75, -3.25, -3.75 };
-  double ALICE_y_0NXNXN0N[3]  = { 0.50, 0.00, -0.50                      };
-  double ALICE_y_XN0N[3]      = {                    -2.75, -3.25, -3.75 };
-  double ALICE_y_XNXN[6]      = { 0.50, 0.00, -0.50, -2.75, -3.25, -3.75 };
+  double ALICE_y_0N0N[5]      = { 0.00, -0.50, -2.75, -3.25, -3.75 };
+  double ALICE_y_0NXNXN0N[2]  = { 0.00, -0.50                      };
+  double ALICE_y_XN0N[3]      = {              -2.75, -3.25, -3.75 };
+  double ALICE_y_XNXN[5]      = { 0.00, -0.50, -2.75, -3.25, -3.75 };
 
-  double ySize_0N0N[6]      = { 0.30, 0.20, 0.30, 0.25, 0.25, 0.25 };
-  double ySize_0NXNXN0N[3]  = { 0.30, 0.20, 0.30                   };
-  double ySize_XN0N[3]      = {                   0.25, 0.25, 0.25 };
-  double ySize_XNXN[6]      = { 0.30, 0.20, 0.30, 0.25, 0.25, 0.25 };
+  double ySize_0N0N[5]      = { 0.20, 0.30, 0.25, 0.25, 0.25 };
+  double ySize_0NXNXN0N[2]  = { 0.20, 0.30                   };
+  double ySize_XN0N[3]      = {             0.25, 0.25, 0.25 };
+  double ySize_XNXN[5]      = { 0.20, 0.30, 0.25, 0.25, 0.25 };
 
-  double ALICE_sig_0N0N[6]  = { 2.900, 3.130, 2.900, 2.668, 2.322, 1.590 };
-  double ALICE_sta_0N0N[6]  = { 0.070, 0.090, 0.070, 0.076, 0.033, 0.049 };
-  double ALICE_cor_0N0N[6]  = { 0.044, 0.047, 0.044, 0.011, 0.010, 0.010 };
-  double ALICE_unc_0N0N[6]  = { 0.152, 0.164, 0.152, 0.199, 0.173, 0.119 };
-  double ALICE_mig_0N0N[6]  = { 0.104, 0.122, 0.104, 0.009, 0.005, 0.003 };
+  double ALICE_sig_0N0N[5]  = { 3.130, 2.900, 2.668, 2.322, 1.590 };
+  double ALICE_sta_0N0N[5]  = { 0.090, 0.070, 0.076, 0.033, 0.049 };
+  double ALICE_cor_0N0N[5]  = { 0.047, 0.044, 0.011, 0.010, 0.010 };
+  double ALICE_unc_0N0N[5]  = { 0.164, 0.152, 0.199, 0.173, 0.119 };
+  double ALICE_mig_0N0N[5]  = { 0.122, 0.104, 0.009, 0.005, 0.003 };
 
-  double ALICE_sig_0NXNXN0N[3]  = { 0.800, 0.730, 0.800 };
-  double ALICE_sta_0NXNXN0N[3]  = { 0.040, 0.050, 0.040 };
-  double ALICE_cor_0NXNXN0N[3]  = { 0.017, 0.015, 0.017 };
-  double ALICE_unc_0NXNXN0N[3]  = { 0.050, 0.045, 0.050 };
-  double ALICE_mig_0NXNXN0N[3]  = { 0.025, 0.025, 0.025 };
+  double ALICE_sig_0NXNXN0N[2]  = { 0.730, 0.800 };
+  double ALICE_sta_0NXNXN0N[2]  = { 0.050, 0.040 };
+  double ALICE_cor_0NXNXN0N[2]  = { 0.015, 0.017 };
+  double ALICE_unc_0NXNXN0N[2]  = { 0.045, 0.050 };
+  double ALICE_mig_0NXNXN0N[2]  = { 0.025, 0.025 };
 
   double ALICE_sig_XN0N[3]  = { 0.242, 0.172, 0.101 };
   double ALICE_sta_XN0N[3]  = { 0.021, 0.010, 0.009 };
@@ -441,11 +441,38 @@ void drawUpcCs(Int_t selectionFlag = 4)
   double ALICE_unc_XN0N[3]  = { 0.018, 0.013, 0.008 };
   double ALICE_mig_XN0N[3]  = { 0.009, 0.006, 0.003 };
 
-  double ALICE_sig_XNXN[6]  = { 0.300, 0.250, 0.300, 0.256, 0.161, 0.079 };
-  double ALICE_sta_XNXN[6]  = { 0.029, 0.024, 0.029, 0.024, 0.011, 0.011 };
-  double ALICE_cor_XNXN[6]  = { 0.006, 0.005, 0.006, 0.005, 0.005, 0.002 };
-  double ALICE_unc_XNXN[6]  = { 0.019, 0.016, 0.019, 0.024, 0.015, 0.008 };
-  double ALICE_mig_XNXN[6]  = { 0.003, 0.002, 0.003, 0.009, 0.006, 0.003 };
+  double ALICE_sig_XNXN[5]  = { 0.250, 0.300, 0.256, 0.161, 0.079 };
+  double ALICE_sta_XNXN[5]  = { 0.024, 0.029, 0.024, 0.011, 0.011 };
+  double ALICE_cor_XNXN[5]  = { 0.005, 0.006, 0.005, 0.005, 0.002 };
+  double ALICE_unc_XNXN[5]  = { 0.016, 0.019, 0.024, 0.015, 0.008 };
+  double ALICE_mig_XNXN[5]  = { 0.002, 0.003, 0.009, 0.006, 0.003 };
+
+  // Mirrored data point
+  double ALICE_y_0N0N_mirror[1]      = { 0.50 };
+  double ALICE_y_0NXNXN0N_mirror[1]  = { 0.50 };
+  double ALICE_y_XNXN_mirror[1]      = { 0.50 };
+
+  double ySize_0N0N_mirror[1]      = { 0.30 };
+  double ySize_0NXNXN0N_mirror[1]  = { 0.30 };
+  double ySize_XNXN_mirror[1]      = { 0.30 };
+
+  double ALICE_sig_0N0N_mirror[1]  = { 2.900 };
+  double ALICE_sta_0N0N_mirror[1]  = { 0.070 };
+  double ALICE_cor_0N0N_mirror[1]  = { 0.044 };
+  double ALICE_unc_0N0N_mirror[1]  = { 0.152 };
+  double ALICE_mig_0N0N_mirror[1]  = { 0.104 };
+
+  double ALICE_sig_0NXNXN0N_mirror[1]  = { 0.800 };
+  double ALICE_sta_0NXNXN0N_mirror[1]  = { 0.040 };
+  double ALICE_cor_0NXNXN0N_mirror[1]  = { 0.017 };
+  double ALICE_unc_0NXNXN0N_mirror[1]  = { 0.050 };
+  double ALICE_mig_0NXNXN0N_mirror[1]  = { 0.025 };
+
+  double ALICE_sig_XNXN_mirror[1]  = { 0.300 };
+  double ALICE_sta_XNXN_mirror[1]  = { 0.029 };
+  double ALICE_cor_XNXN_mirror[1]  = { 0.006 };
+  double ALICE_unc_XNXN_mirror[1]  = { 0.019 };
+  double ALICE_mig_XNXN_mirror[1]  = { 0.003 };
 
   // ALICE data plotting
   vector<double> rgbRaw = {0,0,0};
@@ -459,37 +486,79 @@ void drawUpcCs(Int_t selectionFlag = 4)
 
   //--- plot data
   TGraphErrors *aliceDataErr1;
-  if (selectionFlag == 1) aliceDataErr1  = new TGraphErrors(nP, ALICE_y_0N0N, ALICE_sig_0N0N, ySize_0N0N, &getSquareSum(ALICE_cor_0N0N,ALICE_mig_0N0N,nP)[0]);
-  if (selectionFlag == 2) aliceDataErr1  = new TGraphErrors(nP, ALICE_y_0NXNXN0N, ALICE_sig_0NXNXN0N, ySize_0NXNXN0N, &getSquareSum(ALICE_cor_0NXNXN0N,ALICE_mig_0NXNXN0N,nP)[0]);
+  TGraphErrors *aliceDataErr1_mirror;
+  if (selectionFlag == 1) 
+  {
+    aliceDataErr1  = new TGraphErrors(nP, ALICE_y_0N0N, ALICE_sig_0N0N, ySize_0N0N, &getSquareSum(ALICE_cor_0N0N,ALICE_mig_0N0N,nP)[0]);
+    aliceDataErr1_mirror  = new TGraphErrors(1, ALICE_y_0N0N_mirror, ALICE_sig_0N0N_mirror, ySize_0N0N_mirror, &getSquareSum(ALICE_cor_0N0N_mirror,ALICE_mig_0N0N_mirror,1)[0]);
+  }
+  if (selectionFlag == 2) 
+  {
+    aliceDataErr1  = new TGraphErrors(nP, ALICE_y_0NXNXN0N, ALICE_sig_0NXNXN0N, ySize_0NXNXN0N, &getSquareSum(ALICE_cor_0NXNXN0N,ALICE_mig_0NXNXN0N,nP)[0]);
+    aliceDataErr1_mirror  = new TGraphErrors(1, ALICE_y_0NXNXN0N_mirror, ALICE_sig_0NXNXN0N_mirror, ySize_0NXNXN0N_mirror, &getSquareSum(ALICE_cor_0NXNXN0N_mirror,ALICE_mig_0NXNXN0N_mirror,1)[0]);
+  }
   if (selectionFlag == 3) aliceDataErr1  = new TGraphErrors(nP, ALICE_y_XN0N, ALICE_sig_XN0N, ySize_XN0N, &getSquareSum(ALICE_cor_XN0N,ALICE_mig_XN0N,nP)[0]);
-  if (selectionFlag == 4) aliceDataErr1  = new TGraphErrors(nP, ALICE_y_XNXN, ALICE_sig_XNXN, ySize_XNXN, &getSquareSum(ALICE_cor_XNXN,ALICE_mig_XNXN,nP)[0]);
+  if (selectionFlag == 4) 
+  {
+    aliceDataErr1  = new TGraphErrors(nP, ALICE_y_XNXN, ALICE_sig_XNXN, ySize_XNXN, &getSquareSum(ALICE_cor_XNXN,ALICE_mig_XNXN,nP)[0]);
+    aliceDataErr1_mirror  = new TGraphErrors(1, ALICE_y_XNXN_mirror, ALICE_sig_XNXN_mirror, ySize_XNXN_mirror, &getSquareSum(ALICE_cor_XNXN_mirror,ALICE_mig_XNXN_mirror,1)[0]);
+  }
   aliceDataErr1->SetFillColor(cData);
   aliceDataErr1->SetFillStyle(0);
   aliceDataErr1->SetLineWidth(2);
   aliceDataErr1->Draw("2");
+  if (selectionFlag != 3)
+  {
+    aliceDataErr1_mirror->SetFillColor(cData);
+    aliceDataErr1_mirror->SetFillStyle(0);
+    aliceDataErr1_mirror->SetLineWidth(2);
+    aliceDataErr1_mirror->Draw("2");
+  }
+
 
   TGraphErrors *aliceData;
-  if (selectionFlag == 1) aliceData = new TGraphErrors(nP, ALICE_y_0N0N, ALICE_sig_0N0N, NULL, &getSquareSum(ALICE_sta_0N0N,ALICE_unc_0N0N,nP)[0]);
-  if (selectionFlag == 2) aliceData = new TGraphErrors(nP, ALICE_y_0NXNXN0N, ALICE_sig_0NXNXN0N, NULL, &getSquareSum(ALICE_sta_0NXNXN0N,ALICE_unc_0NXNXN0N,nP)[0]);
+  TGraphErrors *aliceData_mirror;
+  if (selectionFlag == 1) 
+  {
+    aliceData = new TGraphErrors(nP, ALICE_y_0N0N, ALICE_sig_0N0N, NULL, &getSquareSum(ALICE_sta_0N0N,ALICE_unc_0N0N,nP)[0]);
+    aliceData_mirror = new TGraphErrors(1, ALICE_y_0N0N_mirror, ALICE_sig_0N0N_mirror, NULL, &getSquareSum(ALICE_sta_0N0N_mirror,ALICE_unc_0N0N_mirror,1)[0]);
+  }
+  if (selectionFlag == 2) 
+  {
+    aliceData = new TGraphErrors(nP, ALICE_y_0NXNXN0N, ALICE_sig_0NXNXN0N, NULL, &getSquareSum(ALICE_sta_0NXNXN0N,ALICE_unc_0NXNXN0N,nP)[0]);
+    aliceData_mirror = new TGraphErrors(1, ALICE_y_0NXNXN0N_mirror, ALICE_sig_0NXNXN0N_mirror, NULL, &getSquareSum(ALICE_sta_0NXNXN0N_mirror,ALICE_unc_0NXNXN0N_mirror,1)[0]);
+  }
   if (selectionFlag == 3) aliceData = new TGraphErrors(nP, ALICE_y_XN0N, ALICE_sig_XN0N, NULL, &getSquareSum(ALICE_sta_XN0N,ALICE_unc_XN0N,nP)[0]);
-  if (selectionFlag == 4) aliceData = new TGraphErrors(nP, ALICE_y_XNXN, ALICE_sig_XNXN, NULL, &getSquareSum(ALICE_sta_XNXN,ALICE_unc_XNXN,nP)[0]);
+  if (selectionFlag == 4) 
+  {
+    aliceData = new TGraphErrors(nP, ALICE_y_XNXN, ALICE_sig_XNXN, NULL, &getSquareSum(ALICE_sta_XNXN,ALICE_unc_XNXN,nP)[0]);
+    aliceData_mirror = new TGraphErrors(1, ALICE_y_XNXN_mirror, ALICE_sig_XNXN_mirror, NULL, &getSquareSum(ALICE_sta_XNXN_mirror,ALICE_unc_XNXN_mirror,1)[0]);
+  }
   aliceData->SetMarkerColor(cData);
   aliceData->SetMarkerStyle(kFullCircle);
   aliceData->SetMarkerSize(1.2);
   aliceData->SetLineColor(cData);
-  aliceData->SetLineWidth(2);
+  aliceData->SetLineWidth(3);
   aliceData->Draw("zpsame");
-
+  if (selectionFlag != 3)
+  {
+    aliceData_mirror->SetMarkerColor(cData);
+    aliceData_mirror->SetMarkerStyle(kOpenCircle);
+    aliceData_mirror->SetMarkerSize(1.2);
+    aliceData_mirror->SetLineColor(cData);
+    aliceData_mirror->SetLineWidth(3);
+    aliceData_mirror->Draw("zpsame");
+  }
 
   //legend for experimental data
-  Double_t xl = 0.15, dxl = 0.2;
+  Double_t xl = 0.13, dxl = 0.2;
   Double_t yl = 0.60, dyl = 0.25;
-  if ( selectionFlag != 0 ) yl = 0.58, dyl = 0.29;
+  if ( selectionFlag != 0 ) yl = 0.54, dyl = 0.33;
   TLegend* leg = new TLegend(xl, yl, xl+dxl, yl+dyl);
   leg->SetFillStyle(0);
   leg->SetTextSize(fSiz-0.005);
   if ( selectionFlag == 0 || selectionFlag == 1 ) {
-    leg->AddEntry(aliceData,"ALICE Preliminary 0n0n", "EP");
+    leg->AddEntry(aliceData,"ALICE 0n0n", "EP");
     leg->AddEntry(predIA_0N0N,"Impulse approximation", "l");
     // leg->AddEntry(predIA_0N0N_SL,"Impulse approximation SL", "l");
     leg->AddEntry(predSL_0N0N,"STARlight", "l");
@@ -499,7 +568,7 @@ void drawUpcCs(Int_t selectionFlag = 4)
     leg->AddEntry(predBKA_0N0N,"b-BK-A", "l"); 
   }
   if ( selectionFlag == 0 || selectionFlag == 2 ) {
-    leg->AddEntry(aliceData,"ALICE Preliminary 0nXn+Xn0n", "EP");
+    leg->AddEntry(aliceData,"ALICE 0nXn+Xn0n", "EP");
     leg->AddEntry(predIA_0NXN,"Impulse approximation", "l");
     leg->AddEntry(predSL_0NXN,"STARlight", "l");
     leg->AddEntry(eps_0NXN_c,"EPS09 LO", "l");
@@ -508,7 +577,7 @@ void drawUpcCs(Int_t selectionFlag = 4)
     leg->AddEntry(predBKA_0NXN,"b-BK-A", "l");
   }
   if ( selectionFlag == 0 || selectionFlag == 3 ) {
-    leg->AddEntry(aliceData,"ALICE Preliminary Xn0n", "EP");
+    leg->AddEntry(aliceData,"ALICE Xn0n", "EP");
     leg->AddEntry(predIA_0NXN,"Impulse approximation", "l");
     leg->AddEntry(predSL_0NXN,"STARlight", "l");
     leg->AddEntry(eps_0NXN_c,"EPS09 LO", "l");
@@ -517,7 +586,7 @@ void drawUpcCs(Int_t selectionFlag = 4)
     leg->AddEntry(predBKA_0NXN,"b-BK-A", "l");
   }
   if ( selectionFlag == 0 || selectionFlag == 4 ) {
-    leg->AddEntry(aliceData,"ALICE Preliminary XnXn", "EP");
+    leg->AddEntry(aliceData,"ALICE XnXn", "EP");
     leg->AddEntry(predIA_XNXN,"Impulse approximation", "l");
     leg->AddEntry(predSL_XNXN,"STARlight", "l");
     leg->AddEntry(eps_XNXN_c,"EPS09 LO", "l");
@@ -530,8 +599,18 @@ void drawUpcCs(Int_t selectionFlag = 4)
   TLatex* latex5 = new TLatex();
   latex5->SetTextAlign(11);
   latex5->SetNDC();
-  latex5->DrawLatex(0.17,0.90,"ALICE Pb-Pb #sqrt{#it{s}_{NN}} = 5.02 TeV");
+  // latex5->SetTextSize(fSiz-0.005);
+  latex5->DrawLatex(0.15,0.90,"ALICE Pb#kern[0.2]{#minus}Pb #sqrt{#it{s}_{NN}} = 5.02 TeV");
 
   c1->SaveAs(Form("upcCs_%d.eps", selectionFlag));
   c1->SaveAs(Form("upcCs_%d.pdf", selectionFlag));
+}
+
+
+void drawUpcCs()
+{
+  for (int i = 1; i < 5; ++i)
+  {
+    drawUpc(i);
+  }
 }

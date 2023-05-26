@@ -597,14 +597,17 @@ void doOneFit(TTree *dataTree, int iSel, int znSelection,
   leg->AddEntry((TObject*)0,Form("N_{bg(2.85,3.35)} = %3.0f #pm %3.0f", N_bkgd_JPsi_mass_range[0],N_bkgd_JPsi_mass_range[1]),"");
   leg->Draw();
   //---Save as pdf
-  char massFit[120];
-  sprintf(massFit,"massPlots/Selection_%i/Mass_fit_%.2f_y_%.2f_%.2f_pt_%.2f_ZNclass_%d.png", iSel, minRap,maxRap,minPt,maxPt,znSelection);
-  c1->SaveAs(massFit);
+  TString filepath = Form("massPlots/Selection_%i/Mass_fit_%.2f_y_%.2f_%.2f_pt_%.2f_ZNclass_%d.png", iSel, minRap,maxRap,minPt,maxPt,znSelection);
+  gSystem->mkdir(filepath, kTRUE);
+  c1->SaveAs(filepath.Data());
+
   cout << "chi^2 = " << frame->chiSquare() << endl;
   cout << " Entries " << inData.numEntries() << endl;
 
   // set up the output file to save the fit results
-  TFile *fOut = new TFile(Form("massFitResults/Selection_%i/Data_ZNclass%d_%.2f_y_%.2f_%.2f_pt_%.2f.root",iSel,znSelection,abs(minRap),abs(maxRap),minPt,maxPt),"recreate");
+  TString fullpath = Form("massFitResults/Selection_%i/Data_ZNclass%d_%.2f_y_%.2f_%.2f_pt_%.2f.root",iSel,znSelection,abs(minRap),abs(maxRap),minPt,maxPt);
+  gSystem->mkdir(fullpath, kTRUE);
+  TFile *fOut = new TFile(fullpath,"recreate");
 
   TVector nCbParam(2);
   nCbParam[0] = N_JPsi[0];
