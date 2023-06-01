@@ -136,9 +136,11 @@ void computeOneEfficiency(int iData, int iSel,
   cout << "Efficiency in pt range (" << 0.3 << "," << 1.5 << ") is: " << effHistIntegrated->GetEfficiency(1) << endl;
   cout << "Efficiency in pt range (" << 0.0 << "," << 3.0 << ") is: " << effHistAll->GetEfficiency(1) << endl;
 
-  TString fullpath = Form("efficiency/Selection_%i/eff_data_%i_%.2f_y_%.2f.root",iSel,iData,abs(minY),abs(maxY))
+  TString fullpath = Form("efficiency/Selection_%i/eff_data_%i_%.2f_y_%.2f.root",iSel,iData,abs(minY),abs(maxY));
   gSystem->mkdir(fullpath, kTRUE);
   TFile *fOut = new TFile(fullpath,"recreate");
+
+  // write the histograms to the output file 
   fOut->cd();
   recoHist.Write();
   genHist.Write();
@@ -151,7 +153,6 @@ void computeOneEfficiency(int iData, int iSel,
   effHistAll->Write();
   fOut->Close();
 
-  // write the tree to the output file 
 }
 
 void computeEfficiency()

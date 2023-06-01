@@ -37,7 +37,7 @@ void produceFitTree(int iData = 0, int iSel = 1)
   setChainBranches(chain);
 
   // set up the output file and tree
-  TString fullpath = Form("/mnt/Data/Data_processing/Processed_data/TrainResults/fitTrees/fitTree_Data_%d_%d.root",iData,iSel)
+  TString fullpath = Form("/mnt/Data/Data_processing/Processed_data/TrainResults/fitTrees/fitTree_Data_%d_%d.root",iData,iSel);
   gSystem->mkdir(fullpath, kTRUE);
   TFile *fOut = new TFile(fullpath,"recreate");
   TTree* fitTree = new TTree("fitTree", "fitTree");

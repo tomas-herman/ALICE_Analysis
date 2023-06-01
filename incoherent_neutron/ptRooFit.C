@@ -41,13 +41,12 @@
 #include "RooCrystalBall.h"
 
 #include "utilities.h"
-#include "/home/tomas/cernbox/work/ALICE_Analysis/old_coherent/LoadEff.C"
 
 using namespace RooFit;
 
 //-----------------------------------------------
 // Get the histo with pt template
-TH1 *getPtTemplateHisto(int iData, int znSelection, double minRap, double maxRap)
+TH1 *getPtTemplateHisto(int iData, int iSel, int znSelection, double minRap, double maxRap)
 {
   TFile *inFile = nullptr;
   TH1 *h = nullptr;
@@ -56,7 +55,7 @@ TH1 *getPtTemplateHisto(int iData, int znSelection, double minRap, double maxRap
     inFile = TFile::Open(Form("ptHistos/ptHisto_data_%i_%.2f_%.2f.root", iData, abs(minRap), abs(maxRap)));
     h = inFile->Get<TH1>("h");
   } else{
-    inFile = TFile::Open(Form("ptHistos/ptHisto_gamma_%i.root",znSelection));
+    inFile = TFile::Open(Form("ptHistos/Selection_%i/ptHisto_gamma_%i.root",iSel,znSelection));
     h = inFile->Get<TH1>(Form("h%i",znSelection));
   }
   // return the histo
@@ -65,21 +64,8 @@ TH1 *getPtTemplateHisto(int iData, int znSelection, double minRap, double maxRap
 
 //-----------------------------------------------
 // compute fd value on the fly or make a function to compute, save and load them 
-double computeFd(int ptCut, double minRap, double maxRap) 
+double computeFd(int iData, int iSel, TString valOrErr, TString histName, double minRap, double maxRap, int bin)
 {
-  // Load efficiencies
-  double effCohJpsiToMuPtCut;
-  double effCohJpsiToMuPtAll;
-  double effCohPsi2sToMuPtCut;
-  double effCohPsi2sToMuPtAll;
-  double effCohPsi2sToMuPiPtCut;
-  double effCohPsi2sToMuPiPtAll;
-
-  LoadEff(minRap, maxRap, 
-          effCohJpsiToMuPtCut, effCohPsi2sToMuPtCut, effCohPsi2sToMuPiPtCut,
-          effCohJpsiToMuPtAll, effCohPsi2sToMuPtAll, effCohPsi2sToMuPiPtAll, 
-          "ADvetoOff", "CMUP6");
-
   // Psi' to J/Psi cross section ratio values taken from https://alice-publications.web.cern.ch/system/files/draft/5085/2019-08-02-paper_v10.pdf
   double ratio = 0.150;
   double ratio_err = 0.0285;
@@ -89,15 +75,20 @@ double computeFd(int ptCut, double minRap, double maxRap)
   double fdPt;
   double fdPtErr;
 
-  if (ptCut == 0) {
-    fdPt = ratio*effCohPsi2sToMuPiPtAll*0.61400/effCohJpsiToMuPtAll;
+  if (iData == 10) {
+    fdPt = ratio*getEfficiency(15, iSel, valOrErr, histName, minRap, maxRap, bin)*0.61400/getEfficiency(iData, iSel, valOrErr, histName, minRap, maxRap, bin);
     fdPtErr = ratio/ratio_err*fdPt;
   }
-  if (ptCut == 1) {
-    fdPt = ratio*effCohPsi2sToMuPiPtCut*0.61400/effCohJpsiToMuPtCut;
+  else if (iData == 11) {
+    fdPt = ratio*getEfficiency(16, iSel, valOrErr, histName, minRap, maxRap, bin)*0.61400/getEfficiency(iData, iSel, valOrErr, histName, minRap, maxRap, bin);
     fdPtErr = ratio/ratio_err*fdPt;
   }
-    return fdPt;
+  else {
+    cout << "Data selection not know." << endl;
+    throw;
+  }
+
+  return fdPt;
 }
 
 
@@ -139,12 +130,12 @@ void doOnePtFit(TTree *dataTree, int iSel, int znSelection,
 
   // build pdfs
   // ---Create histograms
-  RooDataHist dataHistCohJpsiToMu("dataHistCohJpsiToMu","dataHistCohJpsiToMu",pt,getPtTemplateHisto(10, -1, minRap, maxRap),1);
-  RooDataHist dataHistIncohJpsiToMu("dataHistIncohJpsiToMu","dataHistIncohJpsiToMu",pt,getPtTemplateHisto(11, -1, minRap, maxRap),1);
-  RooDataHist dataHistCohPsi2sToMuPi("dataHistCohPsi2sToMuPi","dataHistCohPsi2sToMuPi",pt,getPtTemplateHisto(15, -1, minRap, maxRap),1);
-  RooDataHist dataHistIncohPsi2sToMuPi("dataHistIncohPsi2sToMuPi","dataHistIncohPsi2sToMuPi",pt,getPtTemplateHisto(16, -1, minRap, maxRap),1);
-  // RooDataHist dataHistTwoGammaToMuMedium("dataHistTwoGammaToMuMedium","dataHistTwoGammaToMuMedium",pt,getPtTemplateHisto(13, -1, minRap, maxRap),1); // STARlight PDF
-  RooDataHist dataHistTwoGammaToMuMedium("dataHistTwoGammaToMuMedium","dataHistTwoGammaToMuMedium",pt,getPtTemplateHisto(-1, znSelection, -1, -1),1); // Data driven PDF
+  RooDataHist dataHistCohJpsiToMu("dataHistCohJpsiToMu","dataHistCohJpsiToMu",pt,getPtTemplateHisto(10, -1, -1, minRap, maxRap),1);
+  RooDataHist dataHistIncohJpsiToMu("dataHistIncohJpsiToMu","dataHistIncohJpsiToMu",pt,getPtTemplateHisto(11, -1, -1, minRap, maxRap),1);
+  RooDataHist dataHistCohPsi2sToMuPi("dataHistCohPsi2sToMuPi","dataHistCohPsi2sToMuPi",pt,getPtTemplateHisto(15, -1, -1, minRap, maxRap),1);
+  RooDataHist dataHistIncohPsi2sToMuPi("dataHistIncohPsi2sToMuPi","dataHistIncohPsi2sToMuPi",pt,getPtTemplateHisto(16, -1, -1, minRap, maxRap),1);
+  // RooDataHist dataHistTwoGammaToMuMedium("dataHistTwoGammaToMuMedium","dataHistTwoGammaToMuMedium",pt,getPtTemplateHisto(13, -1, -1, minRap, maxRap),1); // STARlight PDF
+  RooDataHist dataHistTwoGammaToMuMedium("dataHistTwoGammaToMuMedium","dataHistTwoGammaToMuMedium",pt,getPtTemplateHisto(-1, iSel, znSelection, -1, -1),1); // Data driven PDF
 
   // return the PDF
   RooHistPdf pdfCohJpsiToMu("pdfCohJpsiToMu", "pdfCohJpsiToMu",pt,dataHistCohJpsiToMu,0);
@@ -164,9 +155,13 @@ void doOnePtFit(TTree *dataTree, int iSel, int znSelection,
   RooGenericPdf pdfIncohJpsiToX("pdfIncohJpsiToX","pt*pow((1+pow(pt,2)*b/n),-n)",RooArgSet(pt, b, n)); 
 
   // Get fD value
-  double fdPtAll = computeFd(0, minRap, maxRap);
-  RooRealVar rooFdPtAll("fdPtAll","fd for all pt range",fdPtAll);
-  rooFdPtAll.setConstant(kTRUE);
+  double fdPtAllCoh = computeFd(10, iSel, "val", "effHistAll", minRap, maxRap, -1);
+  RooRealVar rooFdPtAllCoh("fdPtAllCoh","fd for all pt range",fdPtAllCoh);
+  rooFdPtAllCoh.setConstant(kTRUE);
+
+  double fdPtAllIncoh = computeFd(11, iSel, "val", "effHistAll", minRap, maxRap, -1);
+  RooRealVar rooFdPtAllIncoh("fdPtAllIncoh","fd for all pt range",fdPtAllIncoh);
+  rooFdPtAllIncoh.setConstant(kTRUE);
 
 
   //Set the normalisation for the pt fit templates
@@ -174,8 +169,8 @@ void doOnePtFit(TTree *dataTree, int iSel, int znSelection,
   RooRealVar nCohJpsiToMu("J/#psi_{coh}","number of coherent jpsi events",0.75*nEvents,0,nEvents);   
   RooRealVar nIncohJpsiToMu("J/#psi_{incoh}","number of incoherent jpsi events",0.1*nEvents,0,nEvents); 
   // ---Psi' feed down fixed by JPsi values * feed down coeficient
-  RooFormulaVar nCohPsi2sToMuPi("psi'#to#pi_{coh}","@0*@1",RooArgList(nCohJpsiToMu,rooFdPtAll));
-  RooFormulaVar nIncohPsi2sToMuPi("psi'#to#pi_{incoh}","@0*@1",RooArgList(nIncohJpsiToMu,rooFdPtAll));
+  RooFormulaVar nCohPsi2sToMuPi("psi'#to#pi_{coh}","@0*@1",RooArgList(nCohJpsiToMu,rooFdPtAllCoh));
+  RooFormulaVar nIncohPsi2sToMuPi("psi'#to#pi_{incoh}","@0*@1",RooArgList(nIncohJpsiToMu,rooFdPtAllIncoh));
   // ---Gamma gamma is fixed to background in the mass fit
   double nBkgd = getMassFitResults(iSel,znSelection,"val","nBkgdParam",minPt,maxPt,minRap,maxRap);
   RooRealVar nTwoGammaToMuMedium("#gamma#gamma","number of gg", nBkgd,0,nEvents);

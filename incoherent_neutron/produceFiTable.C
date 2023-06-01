@@ -61,7 +61,7 @@ void produceFiTable(int iData = 0, int iSel = 1)
   
   double fI[2] = {0,0};
   // ---------
-  // make a fit
+  // make a table
   for (int i = 1; i < 4; i++) {
     cout << abs(maxRap[i]) << " < |y| < " << abs(minRap[i]) << endl;
     for ( auto& znSelection : znSelections ) {

@@ -102,6 +102,44 @@ double getMcMassParam(int iData,TString valOrErr,TString paramName,double minPt,
 }
 
 //-----------------------------------------------
+// Get the efficiency value
+double getEfficiency(int iData, int iSel, TString valOrErr, TString histName, double minRap, double maxRap, int bin)
+{
+  TFile *inFile = TFile::Open(Form("efficiency/Selection_%i/eff_data_%i_%.2f_y_%.2f.root",iSel,iData,abs(minRap),abs(maxRap)));
+
+  if (!inFile) {
+    cout << " File not found: " << Form("efficiency/Selection_%i/eff_data_%i_%.2f_y_%.2f.root",iSel,iData,abs(minRap),abs(maxRap)) << endl;
+    throw;
+  }
+
+  TEfficiency *h = nullptr;
+  double eff;
+
+  // This is the binning used in the efficeincy computation
+  // int nBins = 7;
+  // double xBins [8] = {0.0, 0.3, 0.5, 0.7, 0.9, 1.2, 1.5, 3.0};
+
+  if (histName.Contains("effHistIntegrated")) // Efficiency in pt range (0.3,1.5)
+  {
+    h = inFile->Get<TEfficiency>("effHistIntegrated"); 
+    if (valOrErr.Contains("val")){ eff = h->GetEfficiency(1); }
+  }
+  else if (histName.Contains("effHistAll")) // Efficiency in pt range (0.0,3.0)
+  {
+    h = inFile->Get<TEfficiency>("effHistAll");
+    if (valOrErr.Contains("val")){ eff = h->GetEfficiency(1); }
+  }
+  else
+  {
+    h = inFile->Get<TEfficiency>("effHist"); // Efficiency in given pt bin
+    if (valOrErr.Contains("val")){ eff = h->GetEfficiency(bin+1); }
+  }
+  
+  // return the value
+  return (eff);
+}
+
+//-----------------------------------------------
 // Get the pt fit results
 double getPtFitResults(int iSel, int znSelection, TString valOrErr,TString paramName,double minMass,double maxMass,double minRap,double maxRap)
 {
